@@ -33,13 +33,15 @@ let objects = {
        {
          'js':['index','commons'],			//js名称，包括公共
          'css':['index'],				    //css 名称
-         'output':'./views' //默认同Key      //产出目录
+         'output':'./views', //默认同Key      //产出目录
+         'inject':true
        },
        '../views/entry/user.ejs':
        {
          'js':['user','commons'],
          'css':['user'],
-         'output':'./views'
+         'output':'./views',
+         'inject':true
        }
      }
 };
