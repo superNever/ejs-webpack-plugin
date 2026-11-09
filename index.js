@@ -10,10 +10,10 @@ function makeTags(file, assets, type) {
         if (i.substr(-4) !== '.map' && i.indexOf(file) !== -1) {
             console.log(file, type, path.normalize(i), new RegExp(file).test(path.normalize(i)))
             if (type === 'js' && /\.js/.test(path.normalize(i))) {
-                tags += '<script type="text/javascript" src = ' + path.normalize(i) + '></script>';
+                tags += '<script type="text/javascript" src="/' + path.posix.normalize(i) + '" defer></script>';
 
-            } else if (type === 'css' && new RegExp(file).test(path.normalize(i))) {
-                tags += '<link rel="stylesheet" href=' + path.normalize(i) + ' />'
+            } else if (type === 'css' && /\.css/.test(path.normalize(i))) {
+                tags += '<link rel="stylesheet" href="/' + path.posix.normalize(i) + '" />'
             }
         }
     })
@@ -50,7 +50,7 @@ function regReplace(origin, replaceContent, ref, type) {
 }
 
 EjsWebpackPlugin.prototype.ejsInject = function (assets , assets2 , assetTag , self) {
- 
+
     var entry = this.options.entry;
     var ejsList = Object.keys(entry);
 
@@ -326,13 +326,12 @@ EjsWebpackPlugin.prototype.createHtmlTag = function (tagDefinition) {
 EjsWebpackPlugin.prototype.apply = function (compiler) {
     var _this = this
 
-    compiler.plugin('emit', function (compilation, callback) {
-
+    compiler.hooks.emit.tapAsync('EjsWebpackPlugin', function (compilation, callback) {
         var allChunks = compilation.getStats().toJson().chunks;
         var chunks = _this.filterChunks(allChunks, _this.options.chunks, _this.options.excludeChunks);
         var assets = _this.htmlWebpackPluginAssets(compilation, chunks);
         var assetTags = _this.generateAssetTags(assets);
-         
+        
 
         _this.ejsInject(Object.keys(compilation.assets) , assets , { body: assetTags.body, head: assetTags.head }, _this)
         callback()
